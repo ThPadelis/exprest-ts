@@ -1,6 +1,8 @@
 import express, { Application } from "express";
 import { BaseMiddleware } from "../middlewares";
 import { BaseRouter } from "../routes";
+import { environment } from "../utils/environment";
+import { Database } from "./database";
 
 export class App {
   app: Application;
@@ -8,6 +10,7 @@ export class App {
   constructor() {
     this.app = express();
     this.setMiddlewares();
+    this.connectDatabase();
     this.startServer();
   }
 
@@ -18,9 +21,15 @@ export class App {
     this.app.use(BaseRouter.routes);
   }
 
+  private connectDatabase() {
+    Database.connect();
+  }
+
   private startServer() {
-    this.app.listen(8080, () => {
-      console.log(`Server is up and running on http://localhost:8080`);
+    this.app.listen(environment.port, () => {
+      console.log(
+        `Server is up and running on ${environment.host}:${environment.port}`
+      );
     });
   }
 }
