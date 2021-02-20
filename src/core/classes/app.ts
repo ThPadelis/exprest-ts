@@ -1,8 +1,8 @@
 import express, { Application } from "express";
 import { BaseMiddleware } from "../middlewares";
 import { BaseRouter } from "../routes";
-import { environment } from "../utils/environment";
-import { Database } from "./database";
+import { environment } from "../utils";
+import { Database } from "./index";
 
 export class App {
   app: Application;
