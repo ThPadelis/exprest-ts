@@ -6,9 +6,9 @@ export class AuthController {
     try {
       const doc: IUser = <IUser>request.body;
       const user = await new User(doc).save();
-      response.status(201).json({ message: "User created", user });
+      return response.status(201).json({ message: "User created", user });
     } catch (error) {
-      next({ message: "Register error", error });
+      return next({ message: "Register error", error });
     }
   }
 
@@ -17,9 +17,11 @@ export class AuthController {
       const { email, password } = request.body;
       const user = await User.findByCredentials({ email, password });
       const token = user.generateToken();
-      response.status(200).json({ message: "Successfully loged in", token });
+      return response
+        .status(200)
+        .json({ message: "Successfully logged in", token });
     } catch (error) {
-      next({ message: "Sign in error", error });
+      return next({ message: "Sign in error", error });
     }
   }
 }

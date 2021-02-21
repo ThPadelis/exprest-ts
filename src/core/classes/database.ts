@@ -6,7 +6,7 @@ export class Database {
     try {
       await dbConnect(environment.database_connection_string, {
         useNewUrlParser: true,
-        useFindAndModify: true,
+        useFindAndModify: false,
         useUnifiedTopology: true,
         useCreateIndex: true,
       });
