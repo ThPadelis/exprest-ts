@@ -1,5 +1,8 @@
-import { hashSync } from "bcrypt";
+import { compareSync, hashSync } from "bcrypt";
 import { Document, Model, model, Schema } from "mongoose";
+import { sign } from "jsonwebtoken";
+import { randomBytes } from "crypto";
+import { environment } from "../utils";
 
 // Schema
 const UserSchema = new Schema<UserBaseDocument, UserModel>({
@@ -20,6 +23,7 @@ export interface IUser {
 
 interface UserBaseDocument extends IUser, Document {
   fullName: string;
+  generateToken(): String;
 }
 
 // Virtuals
@@ -28,22 +32,32 @@ UserSchema.virtual("fullName").get(function (this: UserBaseDocument) {
 });
 
 // Methods
-// UserSchema.methods.getGender = function (this: UserBaseDocument) {
-//   return this.gender > 0 ? "Male" : "Female";
-// };
+UserSchema.methods.generateToken = function (this: UserBaseDocument) {
+  return sign({ id: this._id }, environment.secret, { expiresIn: "1800s" });
+};
 
 // For model
 export interface UserModel extends Model<UserBaseDocument> {
-  // findMyCompany(id: string): Promise<UserBaseDocument>;
+  findByCredentials({ email, password }): Promise<UserBaseDocument>;
 }
 
 // Static methods
-// UserSchema.statics.findMyCompany = async function (
-//   this: Model<UserBaseDocument>,
-//   id: string
-// ) {
-//   return this.findById(id).populate("company").exec();
-// };
+UserSchema.statics.findByCredentials = async function (
+  this: Model<UserBaseDocument>,
+  { email, password }
+) {
+  try {
+    const user = await this.findOne({ email });
+    if (!user) throw new Error("There is no user with such an email");
+
+    const isMatch = compareSync(password, user.password);
+    if (!isMatch) throw new Error("Wrong credentials");
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 // Document middlewares
 UserSchema.pre<UserBaseDocument>("save", function (next) {

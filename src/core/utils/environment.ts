@@ -10,6 +10,8 @@ const configurations = {
     name: process.env.APP_NAME || "exprest-ts",
     host: process.env.APP_HOST || "http://127.0.0.1",
     port: process.env.APP_PORT || 8080,
+    salt: process.env.SALT || "salt",
+    secret: process.env.TOKEN_SECRET || "token_secret",
   },
   production: {
     database_connection_string:

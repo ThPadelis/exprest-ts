@@ -8,8 +8,18 @@ export class AuthController {
       const user = await new User(doc).save();
       response.status(201).json({ message: "User created", user });
     } catch (error) {
-      console.log({ message: "User error", details: error });
-      response.status(400).json({ message: "User error", details: error });
+      next({ message: "Register error", error });
+    }
+  }
+
+  async signIn(request: Request, response: Response, next: NextFunction) {
+    try {
+      const { email, password } = request.body;
+      const user = await User.findByCredentials({ email, password });
+      const token = user.generateToken();
+      response.status(200).json({ message: "Successfully loged in", token });
+    } catch (error) {
+      next({ message: "Sign in error", error });
     }
   }
 }

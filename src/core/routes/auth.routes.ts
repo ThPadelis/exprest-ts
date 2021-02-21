@@ -12,6 +12,7 @@ export class AuthRouter {
   get routes() {
     const controller = this._authCotroller;
     router.post("/register", controller.create);
+    router.post("/sign-in", controller.signIn);
     return router;
   }
 }
